@@ -3,6 +3,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.io.*;
+
+// Custom Exception Class
 class DAOException extends Exception
 {
     public DAOException(String message)
@@ -10,6 +12,8 @@ class DAOException extends Exception
         super(message);
     }
 }
+
+// DTO Class
 class Employee
 {
     private String employeeId;
@@ -74,10 +78,76 @@ class Employee
     }
 }
 
+// DAO class
+class EmployeeManager
+{
+    private final static String FILE_NAME="employee.data";
+
+    // Method for adding and storing employee data in file
+    public void add(Employee employeeDTO)throws DAOException
+    {
+        if(employeeDTO==null)throw new DAOException("Employee is null");
+        String employeeId;
+        String name=employeeDTO.getName();
+        if(name==null) throw new DAOException("Name is null");
+        name=name.trim();
+        if(name.length()==0)throw new DAOException("Length of name is zero");
+        String email=employeeDTO.getName();
+        if(email==null) throw new DAOException("email is null");
+        email=email.trim();
+        if(email.length()==0)throw new DAOException("Length of email is zero");
+        int age = employeeDTO.getAge();
+        if(age<0) throw new DAOException("Age should be positive");
+        Date dateOfBirth=employeeDTO.getDateOfBirth();
+        if(dateOfBirth==null)throw new DAOException("Date of birth is null");
+        try
+        {
+            int lastGeneratedEmployeeId=0;
+            String lastGeneratedEmployeeIdString="";
+            int recordCount=0;
+            String recordCountString="";
+            File file=new File(FILE_NAME);
+            RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+            if(randomAccessFile.length()==0)
+            {
+                lastGeneratedEmployeeIdString=String.format("%-10s","10000000");
+                randomAccessFile.writeBytes(lastGeneratedEmployeeIdString+"\n");
+                recordCountString=String.format("%-10s","0");
+                randomAccessFile.writeBytes(recordCountString+"\n");
+                randomAccessFile.seek(0);
+            }
+            lastGeneratedEmployeeId=Integer.parseInt(randomAccessFile.readLine().trim());
+            recordCount=Integer.parseInt(randomAccessFile.readLine().trim());
+            randomAccessFile.seek(randomAccessFile.length());
+            SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd/MM/yyyy");
+            lastGeneratedEmployeeId++;
+            recordCount++;
+            employeeId="A"+lastGeneratedEmployeeId;
+            randomAccessFile.writeBytes(employeeId+"\n");
+            randomAccessFile.writeBytes(name+"\n");
+            randomAccessFile.writeBytes(email+"\n");
+            randomAccessFile.writeBytes(age+"\n");
+            randomAccessFile.writeBytes(simpleDateFormat.format(dateOfBirth)+"\n");
+            randomAccessFile.seek(0);
+            lastGeneratedEmployeeIdString=String.valueOf(lastGeneratedEmployeeId);
+            lastGeneratedEmployeeIdString=String.format("%-10s",lastGeneratedEmployeeIdString);
+            recordCountString=String.valueOf(recordCount);
+            recordCountString=String.format("%-10s",recordCountString);
+            randomAccessFile.writeBytes(lastGeneratedEmployeeIdString+"\n");
+            randomAccessFile.writeBytes(recordCountString+"\n");
+            randomAccessFile.close();
+            employeeDTO.setEmployeeId(employeeId);
+        }catch(IOException ioException)
+        {
+            throw new DAOException(ioException.getMessage());
+        }
+    }
+    
+}
 public class Main {
 
     public static void main(String[] args) {
-       
+        
 	// write your code here
     }
 }
