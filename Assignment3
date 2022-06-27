@@ -1,0 +1,84 @@
+package com.company;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.io.*;
+class DAOException extends Exception
+{
+    public DAOException(String message)
+    {
+        super(message);
+    }
+}
+class Employee
+{
+    private String employeeId;
+    private String name;
+    private String email;
+    private int age;
+    private Date dateOfBirth;
+    public void setEmployeeId(java.lang.String employeeId)
+    {
+        this.employeeId=employeeId;
+    }
+    public java.lang.String getEmployeeId()
+    {
+        return this.employeeId;
+    }
+    public void setName(java.lang.String name)
+    {
+        this.name=name;
+    }
+    public java.lang.String getName()
+    {
+        return this.name;
+    }
+    public void setEmail(java.lang.String email)
+    {
+        this.email=email;
+    }
+    public java.lang.String getEmail()
+    {
+        return this.email;
+    }
+    public void setAge(int age)
+    {
+        this.age=age;
+    }
+    public int getAge()
+    {
+        return this.age;
+    }
+    public void setDateOfBirth(java.util.Date dateOfBirth)
+    {
+        this.dateOfBirth=dateOfBirth;
+    }
+    public java.util.Date getDateOfBirth()
+    {
+        return this.dateOfBirth;
+    }
+
+    public boolean equals(Object other)
+    {
+        if(!(other instanceof Employee)) return false;
+        Employee employee=(Employee)other;
+        return this.employeeId.equalsIgnoreCase(employee.getEmployeeId());
+    }
+    public int compareTo(Employee other)
+    {
+        return this.employeeId.compareToIgnoreCase(other.getEmployeeId());
+    }
+    public int hashCode()
+    {
+        return this.employeeId.toUpperCase().hashCode();
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+       
+	// write your code here
+    }
+}
+
