@@ -118,7 +118,6 @@ class EmployeeManager
             }
             lastGeneratedEmployeeId=Integer.parseInt(randomAccessFile.readLine().trim());
             recordCount=Integer.parseInt(randomAccessFile.readLine().trim());
-            randomAccessFile.seek(randomAccessFile.length());
             SimpleDateFormat simpleDateFormat=new SimpleDateFormat("dd/MM/yyyy");
             lastGeneratedEmployeeId++;
             recordCount++;
