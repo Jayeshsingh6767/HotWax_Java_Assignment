@@ -166,7 +166,6 @@
                 randomAccessFile.readLine();
                 int recordCount=Integer.parseInt(randomAccessFile.readLine().trim());
                 long filePointer=0;
-
                 int x;
                 while(randomAccessFile.getFilePointer()<randomAccessFile.length())
                 {
@@ -213,14 +212,61 @@
             }
         }
         
+        // Method for getting all emoloyees map
+        public Map<String,Employee> getAllEmployeesMap()throws DAOException
+        {
+            Map<String,Employee> employees = new HashMap<String,Employee>();
+            try
+            {
+                File file=new File(FILE_NAME);
+                if(!file.exists()) return employees;
+                RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+                if(randomAccessFile.length()==0) {
+                    randomAccessFile.close();
+                    return employees;
+                }
+                Employee employeeDTO;
+                // for reading header
+                randomAccessFile.readLine();
+                randomAccessFile.readLine();
+                String employeeId;
+                while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+                {
+                    employeeDTO=new Employee();
+                    employeeId=randomAccessFile.readLine();
+                    employeeDTO.setEmployeeId(employeeId);
+                    employeeDTO.setName(randomAccessFile.readLine());
+                    employeeDTO.setEmail(randomAccessFile.readLine());
+                    employeeDTO.setAge(Integer.parseInt(randomAccessFile.readLine()));
+                    try {
+                        employeeDTO.setDateOfBirth(new SimpleDateFormat("dd/MM/yyyy").parse(randomAccessFile.readLine()));
+                    }catch (ParseException parseException)
+                    {
+                        
+                    }
+                    employees.put(employeeId,employeeDTO);
+                }
+                randomAccessFile.close();
+                return employees;
+            }catch(IOException ioxception)
+            {
+                throw new DAOException(ioxception.getMessage());
+            }
+        }
     }
     public class Main {
 
         public static void main(String[] args) {
             Scanner sc=new Scanner(System.in);
-            
+            Map<String,Employee> employeesMap;
             EmployeeManager employeeManager=new EmployeeManager();
-            
+            try {
+                employeesMap=employeeManager.getAllEmployeesMap();
+            }catch (DAOException daoException)
+            {
+                System.out.println(daoException.getMessage());
+                return;
+            }
             while(true)
             {
                 System.out.println("1.Add");
@@ -229,7 +275,7 @@
                 System.out.println("4.Exit");
                 System.out.print("Enter your choice: ");
                 int choice=sc.nextInt();
-                int age,c;
+                int age,side,a,base,c;
                 String name,email,employeeId;
                 Date dateOfBirth;
                 String dateOfBirthString;
@@ -240,16 +286,13 @@
                         sc.nextLine();
                         System.out.print("Enter Name: ");
                         name=sc.nextLine();
-
                         System.out.print("Enter Email: ");
                         email=sc.nextLine();
-
                         System.out.print("Enter Age: ");
                         age=sc.nextInt();
                         sc.nextLine();
                         while(true)
                         {
-
                             System.out.print("Enter Date of Birth: ");
                             dateOfBirthString=sc.nextLine();
                         try {
@@ -260,7 +303,6 @@
                             System.out.println("Invalid Date please use this format (dd/MM/yyyy)");
                         }
                         }
-
                         Employee employee=new Employee();
                         employee.setName(name);
                         employee.setEmail(email);
@@ -269,32 +311,59 @@
                         try {
                             employeeManager.add(employee);
                             System.out.println("Employee added with employee Id: " +employee.getEmployeeId());
-                  
+                            // adding entry in map
+                            employeesMap.put(employee.getEmployeeId(),employee);
                         }catch (DAOException daoException)
                         {
                             System.out.println(daoException.getMessage());
                         }
-
                         break;
                     }
                     case 2://Delete
                     {
-                       break;
+                        sc.nextLine();
+                        System.out.print("Enter Employee Id:");
+                        employeeId=sc.nextLine();
+                        try {
+                           employeeManager.delete(employeeId);
+                           // deleting entry from map
+                            employeesMap.remove(employeeId);
+                           System.out.println("Employee Deleted");
+                        }catch (DAOException daoException)
+                        {
+                           System.out.println(daoException.getMessage());
+                        }
+                        break;
                     }
                     case 3://Search
                     {
+                        sc.nextLine();
+                        System.out.print("Enter Employee Id:");
+                        employeeId=sc.nextLine();
+                        Employee employee=employeesMap.get(employeeId);
+                        if(employee!=null)
+                        {
+                            System.out.println("Employee Id :"+employeeId);
+                            System.out.println("Employee Name :"+employee.getName());
+                            System.out.println("Employee Email :"+employee.getEmail());
+                            System.out.println("Employee Age :"+employee.getAge());
+                            dateOfBirth=employee.getDateOfBirth();
+                            DateFormat df=new SimpleDateFormat("dd/MM/yyyy");
+                            System.out.println("Employee Date of Birth :"+df.format(dateOfBirth));
+                        }else
+                        {
+                            System.out.println("Invalid Employee Id");
+                        }
                         break;
                     }
                     case 4://exit
                     {
-
                         System.out.println("Thank You....");
                         return;
                     }
                 }
 
-            }
-        // write your code here
+            } 
         }
     }
 
