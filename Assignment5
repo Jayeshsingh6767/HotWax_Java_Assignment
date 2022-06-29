@@ -1,5 +1,8 @@
 package com.company;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 class Address implements Serializable
@@ -20,7 +23,7 @@ class Address implements Serializable
     public String getCity() {
         return city;
     }
-    
+
     public String getState() {
         return state;
     }
@@ -28,7 +31,7 @@ class Address implements Serializable
     public String getCountry() {
         return country;
     }
-    
+
     public int getPinCode() {
         return pinCode;
     }
@@ -58,10 +61,57 @@ class Student implements Serializable
         return address;
     }
 }
+
+class SerializationTest
+{
+    private String FILE_NAME;
+
+    public SerializationTest(String FILE_NAME) {
+        this.FILE_NAME = FILE_NAME;
+    }
+    
+    /* method that that constructs four different Student
+       objects and then serializes the result to a specified file 
+    */
+    public void createStudents()throws IOException
+    {
+        Address a1=new Address("Ujjain","Madhya Pradesh","India",456001);
+        Student s1=new Student("Jayesh Singh Bais","08/01/2000",a1);
+        Address a2=new Address("Ujjain","Madhya Pradesh","India",456001);
+        Student s2=new Student("Narayan Patel","25/03/2000",a2);
+        Address a3=new Address("Ujjain","Madhya Pradesh","India",456001);
+        Student s3=new Student("Narayan Patidar","29/03/2000",a3);
+        Address a4=new Address("Ujjain","Madhya Pradesh","India",456001);
+        Student s4=new Student("Mayur Jain","27/05/2001",a4);
+        FileOutputStream fileOutputStream = new FileOutputStream(FILE_NAME);
+        ObjectOutputStream oos = new ObjectOutputStream(fileOutputStream);
+        oos.writeObject(s1);
+        oos.writeObject(s2);
+        oos.writeObject(s3);
+        oos.writeObject(s4);
+        oos.flush();
+        oos.close();
+    }
+}
 public class Main {
 
     public static void main(String[] args) {
-	// write your code here
+
+        if(args.length<1)
+        {
+            System.out.println("Please Provide File name");
+            return;
+        }
+        String fileName=args[0];
+        SerializationTest s = new SerializationTest(fileName);
+        try
+        {
+            s.createStudents();
+            System.out.println("Serialization Done");
+        }catch (IOException io)
+        {
+            System.out.println(io);
+        }
     }
 }
 
