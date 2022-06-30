@@ -1,0 +1,48 @@
+package com.company;
+
+import com.sun.jmx.mbeanserver.NamedObject;
+
+class Account
+{
+    private String name;
+    private int balance;
+    public Account(String name)
+    {
+        this.name=name;
+        this.balance=1000;
+    }
+    public int withdraw(int amount)
+    {
+        synchronized (this) {
+            if (amount <= balance) {
+                this.balance = this.balance - amount;
+                return amount;
+            } else return 0;
+        }
+    }
+}
+class AccountOverdrawSafeDemo implements Runnable
+{
+    private static Account account;
+    private int amount;
+    public void run()
+    {
+        int a=account.withdraw(amount);
+        if(a>0) System.out.println("Ammount Withdraw: "+amount);
+        else System.out.println("insufficient Balance");
+    }
+
+    public static void main(String[] args)
+    {
+        account=new Account("Jack");
+        AccountOverdrawSafeDemo a= new AccountOverdrawSafeDemo();
+        a.amount=600;
+        Thread t1=new Thread(a);
+        AccountOverdrawSafeDemo a2= new AccountOverdrawSafeDemo();
+        a2.amount=600;
+        Thread t2=new Thread(a2);
+        t1.start();
+        t2.start();
+    }
+}
+
